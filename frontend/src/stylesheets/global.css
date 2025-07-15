@@ -1,0 +1,12 @@
+:root {
+    /* Global CSS Variables */
+    /* Variables de ejemplo, reemplacenlas. */
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #f4f4f4;
+    --text-color: #333;
+    --font-family: 'Arial, sans-serif';
+    --font-size: 16px;
+    --border-radius: 4px;
+    --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
