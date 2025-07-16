@@ -43,7 +43,7 @@ export function initializeDatabase() {
     db.query('SELECT * FROM users WHERE UID = ?', [process.env.ADMIN_UID || 1], (error, result) => {
       if (error) throw error;
       if ((result as any[]).length === 0) {
-        db.query('INSERT INTO users (ID, UID, is_admin) VALUES (0, ?, TRUE)', [process.env.ADMIN_UID || 1], (error) => {
+        db.query('INSERT INTO users (ID, UID, is_admin) VALUES (0, ?, TRUE)', [process.env.ADMIN_UID], (error) => {
           if (error) throw error;
           console.log('Admin registered correctly');
         });

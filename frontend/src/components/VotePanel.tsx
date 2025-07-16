@@ -1,27 +1,36 @@
 import { useEffect, useState } from 'react';
-import { auth } from '../firebase';
+import { auth } from '../../firebase';
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import type { User } from "firebase/auth";
 import LoadingScreen from './Loading';
 import banner from '../assets/images/banner.webp';
 import googleIcon from "../assets/images/google.svg";
 import logo from "../assets/images/logo.png";
-//==============================================
-  //Functions
-function areCookiesEnabled() {
+
+// ===== API Types =====
+import type { Vote, UserStatus, ProposalResponse } from '../types/api';
+import { useParams } from 'react-router-dom';
+
+// ====== Helpers ======
+function areCookiesEnabled(): boolean {
   document.cookie = "testcookie=1";
   const cookiesEnabled = document.cookie.indexOf("testcookie") !== -1;
   document.cookie = "testcookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
   return cookiesEnabled;
 }
-//=============================
-  //Component
-function App({group = 1}) {
-  const [movies, setMovies] = useState([]);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [hasVoted, setHasVoted] = useState(false);
-  const server = import.meta.env.VITE_BACKEND_URL;
-  //=======================================================
+
+// ====== Component ======
+function VotePanel() {
+  const [movies, setMovies] = useState<Vote[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [hasVoted, setHasVoted] = useState<boolean>(false);
+  const { groupStr } = useParams<{ groupStr: string }>();
+  const group = groupStr ? parseInt(groupStr) : 1; // Default to 1 if no group is specified
+  const server = import.meta.env.VITE_API_URL;
+  const voteMasterUID = import.meta.env.VITE_VOTE_MASTER;
+
+  // ====== Auth listener ======
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       setUser(currentUser);
@@ -32,32 +41,29 @@ function App({group = 1}) {
       }
     });
     return () => unsubscribe();
-  }, []);
+  });
 
-//============================================================================================
-  //Proposals refreshing
-  const fetchMovies = async (currentUser) => {
+  // ====== Fetch Proposals ======
+  const fetchMovies = async (currentUser: User) => {
     try {
-      // Fetches all the proposals from the server
       const token = await currentUser.getIdToken();
       const response = await fetch(`${server}/proposals`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        throw new Error('ERROR: Failed to fetch, response was not OK');
-      }
-      const data = await response.json();
+
+      if (!response.ok) throw new Error('ERROR: Failed to fetch, response was not OK');
+
+      const data: Vote[] = await response.json();
       setMovies(data);
-    }catch (error){
+    } catch (error) {
       console.error('Error fetching proposals:', error);
     }
   };
 
-//============================================================================================
-  // Vote status refreshing
-  const checkUserVoteStatus = async (currentUser) => {
+  // ====== Check Vote Status ======
+  const checkUserVoteStatus = async (currentUser: User) => {
     try {
       const token = await currentUser.getIdToken();
       const response = await fetch(`${server}/user-vote-status`, {
@@ -65,107 +71,106 @@ function App({group = 1}) {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        throw new Error('Failed to fetch user vote status');
-      }
-      const data = await response.json();
-      if(currentUser.uid != import.meta.env.VITE_VOTE_MASTER){
+
+      if (!response.ok) throw new Error('Failed to fetch user vote status');
+
+      const data: UserStatus = await response.json();
+      if (currentUser.uid !== voteMasterUID) {
         setHasVoted(data.hasVoted);
       }
     } catch (error) {
       console.error('Error checking user vote status:', error);
     }
   };
-//============================================================================================
-  // Google sign in
+
+  // ====== Sign in with Google ======
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
-    try{
+    try {
       const result = await signInWithPopup(auth, provider);
       setUser(result.user);
       fetchMovies(result.user);
       checkUserVoteStatus(result.user);
-    }catch (error){
+    } catch (error) {
       console.error("Error signing in with Google", error);
     }
   };
-//============================================================================================
-  // Vote emission
-  const handleVote = async (id) => {
+
+  // ====== Handle Vote ======
+  const handleVote = async (id: number) => {
     if (!user) {
       alert("¡Debes iniciar sesión para votar!");
       return;
     }
+
     checkUserVoteStatus(user);
-    if(!areCookiesEnabled()){ 
-      // Display error message if cookies not enabled.
-      alert("Debes tener las cookies habilitadas para votar.")
-      return;}
+
+    if (!areCookiesEnabled()) {
+      alert("Debes tener las cookies habilitadas para votar.");
+      return;
+    }
+
     if (hasVoted) {
       alert("Ya has votado. No puedes votar más de una vez.");
       return;
     }
-    // Adds one vote for the specified id.
-    try{
+
+    try {
       const token = await user.getIdToken();
       const response = await fetch(`${server}/votes/${id}`, {
         method: "POST",
         credentials: "include",
         headers: {
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
           'Content-Type': "application/json",
         },
-        body: JSON.stringify({ userId: user.uid })
+        body: JSON.stringify({ userId: user.uid }),
       });
-      const data = await response.json();
-      if(data.error){
+
+      const data: ProposalResponse & { error?: string } = await response.json();
+
+      if (data.error) {
         alert("Ocurrió un error votando, informa a los organizadores. \n" + data.error);
-      }else{
+      } else {
         console.log(data.message);
         alert("Voto emitido con éxito.");
-        // Refresh the data
         setHasVoted(true);
-
       }
-    }catch(error){
+    } catch (error: any) {
       console.error("Error sending votes:", error);
       alert("Ocurrió un error votando, informa a los organizadores. \n" + error.message);
     }
   };
 
-//============================================================================================
-  //Auth Loading message
+  // ====== Loading screen ======
   if (loading) {
-    return <LoadingScreen/>;
+    return <LoadingScreen />;
   }
-//============================================================================================
-  //App rendering
+
+  // ====== Render App ======
   return (
     <div className="container">
       {!user ? (
-        //If not authenticated not show page contents
         <div>
           <div className='login-form'>
-            <div className='logo-container'><img src={logo} alt='Lola Cine Logo'></img></div>
+            <div className='logo-container'><img src={logo} alt='Lola Cine Logo' /></div>
             <h1>Inicia Sesión</h1>
             <button className='signin' onClick={handleLogin}>
-              <div className='logo-container'><img src={googleIcon} alt='Google icon'></img></div>
+              <div className='logo-container'><img src={googleIcon} alt='Google icon' /></div>
               <span className='login-button-text'>Iniciar sesión con Google</span>
             </button>
           </div>
         </div>
       ) : (
-        //If authenticated render all the page
         <div>
           <div className="banner">
             <img src={banner} alt="Banner" />
           </div>
           <div className="vote-grid">
-            {movies.map((movie) => {
-              if(movie.group == group){
-                return(
-                  // Automatically creates every movie frame in this group (Defined in component props).
-                  <div key={movie.ID} className="movie">
+            {movies
+              .filter((movie) => movie.group === group)
+              .map((movie) => (
+                <div key={movie.ID} className="movie">
                   <div className="content">
                     {movie.name}<br />
                     <span className='school'>{movie.school}</span>
@@ -173,22 +178,13 @@ function App({group = 1}) {
                   <button onClick={() => handleVote(movie.ID)} disabled={hasVoted}>
                     {hasVoted ? "Ya votaste" : "Votar"}
                   </button>
-                  </div>
-                )
-              }
-            })}
+                </div>
+              ))}
           </div>
         </div>
       )}
-
     </div>
   );
 }
 
-//Properties type validation
-App.propTypes = {
-  group: Number
-}
-
-export default App;
-
+export default VotePanel;

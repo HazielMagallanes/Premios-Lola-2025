@@ -1,1 +1,270 @@
 /* Estilos generales no específicos de toda la App añadir aquí, mantener bien organizado */
+@font-face {
+    font-family: "Roboto";
+    src: url("../assets/fonts/Roboto/Roboto-Regular.ttf") format(truetype);
+}
+* {
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+html{
+    width: 100vw;
+    height: 100vh;
+    scroll-behavior: smooth;
+    background-color: #eae287
+} 
+body{
+    margin: 0px;
+    padding: 0px;
+    height: 100vh;
+    width: 100vw;
+    overflow-x: hidden
+}
+.container{
+    margin: 0;
+    padding: 0px;
+    width: 100vw;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.banner{
+    width: 100%;
+    height: 80vh;
+    overflow: hidden;
+}
+.banner img{
+    width: 100%;
+    height: 100%;
+}
+.vote-grid{
+    margin-top: 5%;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 10%;
+    row-gap: 10px;
+    justify-content: center;
+    align-self: center;
+}
+.movie{
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    overflow-x: visible;
+}
+.movie .content{
+    width: 30vw;
+    height: 20vh;
+    color: rgb(26,64,0);
+    border: solid 10px rgb(93,157,41);
+    text-align: center;
+    align-content: center;
+    font-family: "Roboto";
+    font-size: 3vh;
+    font-weight: 800;
+}
+.movie .content .school{
+    color: rgb(93,157,41);
+    font-size: calc(3vh - 0.5vh);
+    font-weight: 300;
+}
+button{
+    background: rgba(93,157,41, 0.336);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(93,157,41, 0.1);
+    backdrop-filter: blur(9.5px);
+    -webkit-backdrop-filter: blur(9.5px);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    align-self: center;
+    transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+    width: 100%;
+    height: 20%;
+    font-family: "Roboto";
+    font-weight: 500;
+}
+button:hover{
+    cursor: pointer;
+}
+button:active{
+    transform: scale(0.98); 
+}
+.login-form{
+    opacity:1;
+    top:20px;
+    transform-origin:161px 100%;
+    transform:rotateX(0deg);
+    position:relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width:30vw;
+    border-top: 4px solid rgba(93, 157, 41, 0.616);
+    height:60vh;
+    position:absolute;
+    left:0;
+    right:0;
+    margin:auto;
+    top:0;
+    bottom:0;
+    padding: 0 40px 40px 40px;
+    backdrop-filter: blur(9.5px);
+    box-shadow: 0 4px 30px rgba(93, 157, 41, 0.562);
+    border-radius: 2%;
+    background: linear-gradient(45deg,  rgba(34, 34, 28, 0.123) 0%,rgba(93, 157, 41, 0.158) 100%); 
+    background: -moz-linear-gradient(45deg,  rgba(34, 34, 28, 0.123) 0%,rgba(93, 157, 41, 0.158) 100%); /* FF3.6+ */
+    background: -webkit-linear-gradient(45deg,  rgba(34, 34, 28, 0.123) 0%,rgba(93, 157, 41, 0.158) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(45deg,  rgba(34, 34, 28, 0.123) 0%,rgba(93, 157, 41, 0.158) 100%); /* Opera 11.10+ */
+    background: linear-gradient(45deg,  rgba(34, 34, 28, 0.123) 0%,rgba(93, 157, 41, 0.158) 100%); /* W3C */
+}
+.login-form h1{
+    font-family: "Roboto";
+    font-size: 150%;
+    font-weight: 500;
+}
+.login-form .logo-container{
+    width: 90%;
+    height: 50%;
+    overflow: hidden;
+}
+.login-form .logo-container img{
+    width: 100%;
+    height: 100%;
+}
+.signin{
+    display: flex;
+    width: 90%;
+    height: 11%;
+    border-radius: 30px;
+    overflow: hidden;
+    align-items: center;
+    text-align: left;
+    font-size: 104%;
+    justify-content: center;
+    background-color: rgb(255, 255, 255);
+    border: solid 4px rgba(246, 255, 122, 0.836);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.397);
+}
+.login-button-text{
+    font-family: "Roboto";
+    font-weight: 400;
+}
+.signin .logo-container{
+    width: 30%;
+    height: 100%;
+    overflow: hidden;
+}
+.signin img{
+    width: 100%;
+    height: 100%;
+}
+
+
+
+/*LOADING SCREEN*/
+.loading-box{
+    width: 40vw;
+    height: 40vw;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    align-items: center;
+    padding: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.loading-box img{
+    width: 100%;
+    height: 100%;
+}
+.loader {
+    border: 16px solid #eae287; 
+    border-top: 20px solid rgb(93,157,41); 
+    border-radius: 100%;
+    width: 10%;
+    height: 10.5%;
+    animation: spin 0.5s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/*ADMIN PANEL */
+.no-access{
+    font-family: "Roboto";
+    font-size: 10vh;
+    display: flex;
+    flex-direction: column;
+}
+.admin-panel{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.admin-panel .panel-buttons{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.admin-panel button{
+    width: 15vw;
+    height: 5vh;
+    font-family: "Roboto";
+    font-weight: 500;
+    font-size: 100%;
+    margin-inline: 10px;
+}
+.proposal-list{
+    margin-top: 10px;
+    font-family: "Roboto";
+    font-weight: 300;
+}
+.proposal-list table, tr{
+    border: solid;
+    border-collapse: collapse;
+}
+.proposal-list table th{
+    border: solid 2px;
+    border-collapse: collapse;
+
+}
+.proposal-list .column-names{
+    font-weight: 600;
+}
+/*MEDIA QUERIES*/
+
+@media (max-width: 1075px){
+    .login-form{
+        width: 60vw;
+        height: 70vh;
+    }
+}
+@media (max-width: 768px){
+    .banner{
+        width: 100%;
+        height: 30vh;
+    }
+    .vote-grid{
+        width: 100%;
+        column-gap: 10px;
+        row-gap: 10px;
+    }
+    .movie{
+        row-gap: 10px;
+    }
+    .movie .content{
+        width: 40vw;
+        height: 20vh;
+    }
+    .login-form{
+        width: 90vw;
+        height: 80vh;
+    }
+}

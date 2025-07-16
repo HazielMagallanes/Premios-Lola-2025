@@ -1,7 +1,6 @@
 import logo from "../assets/images/logo.png" 
 
 function LoadingScreen() {
-  //App rendering
   return (
     <div className="container">
       <div className="loading-box">
@@ -13,4 +12,3 @@ function LoadingScreen() {
 }
 
 export default LoadingScreen;
-
