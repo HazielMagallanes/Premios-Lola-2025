@@ -4,11 +4,22 @@ import { verifyToken } from '../middlewares/auth';
 import { getVoteById, incrementVote, getAllProposals, createProposal } from '../services/voteService';
 import { getUserByUID, addUserVote } from '../services/userService';
 import { getVotingState } from '../services/stateService';
+import type {
+  GetVoteByIdResponse,
+  VoteRecordedResponse,
+  VoteErrorResponse,
+  GetAllProposalsResponse,
+  CreateProposalRequest,
+  CreateProposalResponse
+} from '../types/voteRoutes';
 
 const router = Router();
 
 // Get vote amount of a given id
-router.get('/votes/:id', async (req, res) => {
+router.get<
+  { id: string },
+  GetVoteByIdResponse | VoteErrorResponse
+>('/votes/:id', async (req, res) => {
   const id = Number(req.params.id);
   try {
     const vote = await getVoteById(id);
@@ -23,7 +34,10 @@ router.get('/votes/:id', async (req, res) => {
 });
 
 // Add a vote to a given ID
-router.post('/votes/:id', verifyToken, async (req, res) => {
+router.post<
+  { id: string },
+  VoteRecordedResponse | VoteErrorResponse
+>('/votes/:id', verifyToken, async (req, res) => {
   const id = Number(req.params.id);
   const userId = (req as any).user.uid;
   if (!userId) return res.status(400).json({ error: 'User ID is missing' });
@@ -45,9 +59,20 @@ router.post('/votes/:id', verifyToken, async (req, res) => {
 });
 
 // Get all proposals
-router.get('/proposals', verifyToken, async (req, res) => {
+router.get<
+  {},
+  GetAllProposalsResponse | VoteErrorResponse
+>('/proposals', verifyToken, async (req, res) => {
   try {
-    const proposals = await getAllProposals();
+    const votes = await getAllProposals();
+    // Transform Vote[] to Proposal[]
+    const proposals = votes.map(vote => ({
+      id: vote.ID,
+      name: vote.name,
+      logo: vote.logo,
+      group: String(vote.group),
+      votes: vote.votes
+    }));
     res.json(proposals);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -55,10 +80,15 @@ router.get('/proposals', verifyToken, async (req, res) => {
 });
 
 // Create a new proposal
-router.post('/proposals', async (req, res) => {
+router.post<
+  {},
+  CreateProposalResponse | VoteErrorResponse,
+  CreateProposalRequest
+>('/proposals', async (req, res) => {
   const { name, logo, group } = req.body;
   try {
-    const proposalId = await createProposal(name, logo, group);
+    // Assuming createProposal expects (group: number, name: string, logo: string)
+  const proposalId = await createProposal(name, logo, Number(group));
     res.json({ message: 'Proposal created successfully', proposalId });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
