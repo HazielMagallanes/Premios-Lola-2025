@@ -2,11 +2,10 @@
 import mysql from 'mysql2';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: "../../.env", override: true });
 
 // Create connection using SQL_URL from environment variables
-/* const db = mysql.createConnection(process.env.SQL_URL as string); */
-const db = mysql.createConnection("mysql://root@localhost:3306/testeorapido");
+const db = mysql.createConnection(process.env.SQL_URL as string);
 const AMOUNT_GROUPS = 5; // Total number of groups to initialize in state table
 
 // On connect, create tables if not exist and initialize state/admin
