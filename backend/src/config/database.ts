@@ -6,7 +6,8 @@ dotenv.config();
 
 // Create connection using SQL_URL from environment variables
 /* const db = mysql.createConnection(process.env.SQL_URL as string); */
-const db = mysql.createConnection("mysql://admin:admin123@localhost:3306/testeorapido")
+const db = mysql.createConnection("mysql://root@localhost:3306/testeorapido");
+const AMOUNT_GROUPS = 5; // Total number of groups to initialize in state table
 
 // On connect, create tables if not exist and initialize state/admin
 // This is run once at server start
@@ -30,6 +31,7 @@ export function initializeDatabase() {
       )`,
       `CREATE TABLE IF NOT EXISTS \`state\` (
         ID tinyint AUTO_INCREMENT PRIMARY KEY,
+        \`group\` smallint UNSIGNED NOT NULL,
         enabled BOOLEAN NOT NULL DEFAULT FALSE
       )`
     ];
@@ -43,24 +45,24 @@ export function initializeDatabase() {
     db.query('SELECT * FROM users WHERE UID = ?', [process.env.ADMIN_UID || 1], (error, result) => {
       if (error) throw error;
       if ((result as any[]).length === 0) {
-        db.query('INSERT INTO users (ID, UID, is_admin) VALUES (0, ?, TRUE)', [process.env.ADMIN_UID], (error) => {
+        db.query('INSERT INTO users (ID, UID, is_admin) VALUES (0, ?, TRUE)', [process.env.ADMIN_UID || 1], (error) => {
           if (error) throw error;
           console.log('Admin registered correctly');
         });
       }
     });
-    // Initialize state if not initialized
-    db.query('SELECT * FROM state WHERE ID = 1', (error, result) => {
-      if (error) throw error;
-      if ((result as any[]).length === 0) {
-        db.query('INSERT INTO state (ID, enabled) VALUES (1, FALSE)', (error) => {
-          if (error) throw error;
-          console.log('State initialized as False');
-        });
-      } else {
-        console.log('Votes are: ' + (result as any[])[0].enabled);
-      }
-    });
+    // Inicia el estado en False para todos los grupos del 1 al 2 si no existen
+    for (let group = 1; group <= AMOUNT_GROUPS; group++) {
+      db.query('SELECT * FROM state WHERE ID = ? AND `group` = ?', [group, group], (error, result) => {
+        if (error) throw error;
+        if ((result as any[]).length === 0) {
+          db.query('INSERT INTO state (ID, enabled, `group`) VALUES (?, FALSE, ?)', [group, group], (error) => {
+            if (error) throw error;
+            console.log('State initialized as False for group #' + group);
+          });
+        }
+      });
+    }
   });
 }
 

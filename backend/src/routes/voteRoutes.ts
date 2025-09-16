@@ -1,9 +1,12 @@
 // Express routes for voting and proposals
 import { Router } from 'express';
 import { verifyToken } from '../middlewares/auth';
+import { ratelimitCheck } from '../middlewares/ratelimit';
+import { checkAdmin } from '../middlewares/checkAdmin';
 import { getVoteById, incrementVote, getAllProposals, createProposal } from '../services/voteService';
 import { getUserByUID, addUserVote } from '../services/userService';
 import { getVotingState } from '../services/stateService';
+import { proposalCreateMiddleware } from '../middlewares/proposal.create.middleware';
 import type {
   GetVoteByIdResponse,
   VoteRecordedResponse,
@@ -37,19 +40,20 @@ router.get<
 router.post<
   { id: string },
   VoteRecordedResponse | VoteErrorResponse
->('/votes/:id', verifyToken, async (req, res) => {
+>('/votes/:id', verifyToken, ratelimitCheck, async (req, res) => {
   const id = Number(req.params.id);
   const userId = (req as any).user.uid;
+  if(!id) return res.status(400).json({ error: 'ID is missing or invalid' });
   if (!userId) return res.status(400).json({ error: 'User ID is missing' });
   try {
-    const state = await getVotingState();
-    if (!state || !state.enabled) return res.status(403).json({ error: 'La votación esta deshabilitada, solo puedes votar durante el evento.' });
+    const vote = await getVoteById(id);
+    if(!vote) return res.status(404).json({ error: 'No entries found with the given ID' });
+    const state = await getVotingState(vote.group);
+    if (!state || !state.enabled) return res.status(403).json({ error: 'La votación esta deshabilitada para ese grupo, solo puedes votar durante el evento.' });
     const user = await getUserByUID(userId);
     if (user && user.UID !== process.env.VOTE_MASTER) {
       return res.status(403).json({ error: 'ERROR: User tried to vote but has already voted. Is this correct?' });
     }
-    const vote = await getVoteById(id);
-    if (!vote) return res.status(404).json({ error: 'No entries found with the given ID' });
     await incrementVote(id);
     await addUserVote(userId);
     res.json({ message: `Vote recorded for proposal ${id}.` });
@@ -62,16 +66,17 @@ router.post<
 router.get<
   {},
   GetAllProposalsResponse | VoteErrorResponse
->('/proposals', verifyToken, async (req, res) => {
+>('/proposals', verifyToken, ratelimitCheck, async (req, res) => {
   try {
     const votes = await getAllProposals();
     // Transform Vote[] to Proposal[]
     const proposals = votes.map(vote => ({
-      id: vote.ID,
+      ID: vote.ID,
+      school: vote.school,
       name: vote.name,
       logo: vote.logo,
-      group: String(vote.group),
-      votes: vote.votes
+      votes: vote.votes,
+      group: vote.group
     }));
     res.json(proposals);
   } catch (error: any) {
@@ -84,11 +89,12 @@ router.post<
   {},
   CreateProposalResponse | VoteErrorResponse,
   CreateProposalRequest
->('/proposals', async (req, res) => {
-  const { name, logo, group } = req.body;
+>('/proposals', checkAdmin, proposalCreateMiddleware, async (req, res) => {
+  const { school, name, logo, group } = req.body;
+
   try {
-    // Assuming createProposal expects (group: number, name: string, logo: string)
-  const proposalId = await createProposal(name, logo, Number(group));
+    // Assuming createProposal expects (school: string, name: string, logo: string, group: number)
+    const proposalId = await createProposal(school, name, logo, Number(group));
     res.json({ message: 'Proposal created successfully', proposalId });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

@@ -2,11 +2,12 @@
 import { Router } from 'express';
 import { verifyToken } from '../middlewares/auth';
 import { getUserByUID, isUserAdmin } from '../services/userService';
+import { ratelimitCheck } from '../middlewares/ratelimit';
 
 const router = Router();
 
 // Get if user voted
-router.get('/user-vote-status', verifyToken, async (req, res) => {
+router.get('/user-vote-status', verifyToken, ratelimitCheck, async (req, res) => {
   const userId = (req as any).user.uid;
   try {
     const user = await getUserByUID(userId);
@@ -17,7 +18,7 @@ router.get('/user-vote-status', verifyToken, async (req, res) => {
 });
 
 // Get if user has admin perms
-router.get('/user-is-admin', verifyToken, async (req, res) => {
+router.get('/user-is-admin', verifyToken, ratelimitCheck, async (req, res) => {
   const userId = (req as any).user.uid;
   try {
     const isAdmin = await isUserAdmin(userId);

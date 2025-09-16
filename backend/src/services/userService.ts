@@ -26,7 +26,7 @@ export const isUserAdmin = (uid: string): Promise<boolean> => {
 
 export const addUserVote = (uid: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    db.query('INSERT INTO users (UID) VALUES (?)', [uid], (error: any) => {
+    db.query('INSERT INTO users (`UID`) VALUES (?)', [uid], (error: any) => {
       if (error) return reject(error);
       resolve();
     });

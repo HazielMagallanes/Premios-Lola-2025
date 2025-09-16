@@ -26,7 +26,7 @@ function VotePanel() {
   const [loading, setLoading] = useState<boolean>(true);
   const [hasVoted, setHasVoted] = useState<boolean>(false);
   const { groupStr } = useParams<{ groupStr: string }>();
-  const group = groupStr ? parseInt(groupStr) : 1; // Default to 1 if no group is specified
+  const group = !isNaN(Number(groupStr)) ? Number(groupStr) : 1; // Default to 1 if no group is specified
   const server = import.meta.env.VITE_API_URL;
   const voteMasterUID = import.meta.env.VITE_VOTE_MASTER;
 
@@ -149,41 +149,41 @@ function VotePanel() {
 
   // ====== Render App ======
   return (
-    <div className="container">
+    <main className="container">
       {!user ? (
-        <div>
-          <div className='login-form'>
+        <section aria-labelledby="auth-title">
+          <div className='login-form' role="region" aria-label="Inicio de sesión">
             <div className='logo-container'><img src={logo} alt='Lola Cine Logo' /></div>
-            <h1>Inicia Sesión</h1>
-            <button className='signin' onClick={handleLogin}>
-              <div className='logo-container'><img src={googleIcon} alt='Google icon' /></div>
+            <h1 id="auth-title">Inicia Sesión</h1>
+            <button className='signin' onClick={handleLogin} aria-label="Iniciar sesión con Google">
+              <div className='logo-container'><img src={googleIcon} alt='Google' /></div>
               <span className='login-button-text'>Iniciar sesión con Google</span>
             </button>
           </div>
-        </div>
+        </section>
       ) : (
-        <div>
-          <div className="banner">
+        <>
+          <header className="banner" role="banner">
             <img src={banner} alt="Banner" />
-          </div>
-          <div className="vote-grid">
+          </header>
+          <section className="vote-grid" aria-label="Listado de propuestas">
             {movies
-              .filter((movie) => movie.group === group)
+              .filter((movie) => movie.group == group)
               .map((movie) => (
-                <div key={movie.ID} className="movie">
+                <article key={movie.ID} className="movie" aria-label={`Propuesta: ${movie.name}`}>
                   <div className="content">
-                    {movie.name}<br />
+                    <h3 className="title">{movie.name}</h3>
                     <span className='school'>{movie.school}</span>
                   </div>
-                  <button onClick={() => handleVote(movie.ID)} disabled={hasVoted}>
+                  <button onClick={() => handleVote(movie.ID)} disabled={hasVoted} aria-label={`Votar por ${movie.name}`}>
                     {hasVoted ? "Ya votaste" : "Votar"}
                   </button>
-                </div>
+                </article>
               ))}
-          </div>
-        </div>
+          </section>
+        </>
       )}
-    </div>
+    </main>
   );
 }
 

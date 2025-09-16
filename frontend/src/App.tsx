@@ -9,7 +9,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<VotePanel />} />
-        <Route path="/group/:groupId" element={<VotePanel />} />
+        <Route path="/group/:groupStr" element={<VotePanel />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
