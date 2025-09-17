@@ -60,10 +60,22 @@ body{
     color: rgb(26,64,0);
     border: solid 10px rgb(93,157,41);
     text-align: center;
+    display: flex;
+    flex-direction: column;
     align-content: center;
+    align-items: center;
+    justify-items: center;
     font-family: "Roboto";
     font-size: 3vh;
     font-weight: 800;
+}
+.movie.kids .content {
+    width: 60vw;
+    height: 60vh;
+}
+.movie.kids .content > img{
+    width: 60%;
+    height: 80%;
 }
 .movie .content .school{
     color: rgb(93,157,41);

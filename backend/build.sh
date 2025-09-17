@@ -1,0 +1,3 @@
+npm run build
+cp -r ./public/ ./dist/public/
+npm run start

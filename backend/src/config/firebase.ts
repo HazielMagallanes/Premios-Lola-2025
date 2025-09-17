@@ -3,7 +3,7 @@ import admin from 'firebase-admin';
 import dotenv from 'dotenv';
 
 dotenv.config({ path: "../../.env", override: true });
-
+console.warn(process.env.FIREBASE_PROJECT_ID);
 const firebaseConfig = {
   type: 'service_account',
   project_id: process.env.FIREBASE_PROJECT_ID,

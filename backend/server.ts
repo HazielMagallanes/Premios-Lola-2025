@@ -9,11 +9,12 @@ import adminRoutes from './src/routes/adminRoutes';
 import voteRoutes from './src/routes/voteRoutes';
 import userRoutes from './src/routes/userRoutes';
 import stateRoutes from './src/routes/stateRoutes';
+import path from 'node:path';
 
 // Initialize database and tables
 initializeDatabase();
 
-config({ path: "./.env", override: true });
+config({ path: "./.env.local", override: true });
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -50,6 +51,7 @@ app.use('/', adminRoutes);
 app.use('/', stateRoutes);
 app.use('/', userRoutes);
 app.use('/', voteRoutes);
+app.use('/static', express.static(path.join(__dirname, 'public'))); 
 
 // Start server
 app.listen(port, () => {

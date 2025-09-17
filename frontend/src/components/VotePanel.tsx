@@ -170,8 +170,11 @@ function VotePanel() {
             {movies
               .filter((movie) => movie.group == group)
               .map((movie) => (
-                <div key={movie.ID} className="movie">
+                <div key={movie.ID} className={group != 2 ? "movie" : "movie kids"}>
                   <div className="content">
+                    {movie.logo != '' ? (
+                      <img src={`${import.meta.env.VITE_API_URL}/${movie.logo}`} alt={movie.name} />
+                    ) : null}
                     {movie.name}<br />
                     <span className='school'>{movie.school}</span>
                   </div>
