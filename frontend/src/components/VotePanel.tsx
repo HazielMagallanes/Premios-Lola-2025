@@ -25,8 +25,8 @@ function VotePanel() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [hasVoted, setHasVoted] = useState<boolean>(false);
-  const { groupStr } = useParams<{ groupStr: string }>();
-  const group = !isNaN(Number(groupStr)) ? Number(groupStr) : 1; // Default to 1 if no group is specified
+  const { groupId } = useParams<{ groupId: string }>();
+  const group = !isNaN(Number(groupId)) ? Number(groupId) : 1; // Default to 1 if no group is specified
   const server = import.meta.env.VITE_API_URL;
   const voteMasterUID = import.meta.env.VITE_VOTE_MASTER;
 
@@ -110,7 +110,7 @@ function VotePanel() {
       return;
     }
 
-    if (hasVoted) {
+    if (hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE) {
       alert("Ya has votado. No puedes votar más de una vez.");
       return;
     }
@@ -149,41 +149,41 @@ function VotePanel() {
 
   // ====== Render App ======
   return (
-    <main className="container">
+    <div className="container">
       {!user ? (
-        <section aria-labelledby="auth-title">
-          <div className='login-form' role="region" aria-label="Inicio de sesión">
+        <div>
+          <div className='login-form'>
             <div className='logo-container'><img src={logo} alt='Lola Cine Logo' /></div>
-            <h1 id="auth-title">Inicia Sesión</h1>
-            <button className='signin' onClick={handleLogin} aria-label="Iniciar sesión con Google">
-              <div className='logo-container'><img src={googleIcon} alt='Google' /></div>
+            <h1>Inicia Sesión</h1>
+            <button className='signin' onClick={handleLogin}>
+              <div className='logo-container'><img src={googleIcon} alt='Google icon' /></div>
               <span className='login-button-text'>Iniciar sesión con Google</span>
             </button>
           </div>
-        </section>
+        </div>
       ) : (
-        <>
-          <header className="banner" role="banner">
+        <div>
+          <div className="banner">
             <img src={banner} alt="Banner" />
-          </header>
-          <section className="vote-grid" aria-label="Listado de propuestas">
+          </div>
+          <div className="vote-grid">
             {movies
               .filter((movie) => movie.group == group)
               .map((movie) => (
-                <article key={movie.ID} className="movie" aria-label={`Propuesta: ${movie.name}`}>
+                <div key={movie.ID} className="movie">
                   <div className="content">
-                    <h3 className="title">{movie.name}</h3>
+                    {movie.name}<br />
                     <span className='school'>{movie.school}</span>
                   </div>
-                  <button onClick={() => handleVote(movie.ID)} disabled={hasVoted} aria-label={`Votar por ${movie.name}`}>
-                    {hasVoted ? "Ya votaste" : "Votar"}
+                  <button onClick={() => handleVote(movie.ID)} disabled={hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE}>
+                    {hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE ? "Ya votaste" : "Votar"}
                   </button>
-                </article>
+                </div>
               ))}
-          </section>
-        </>
+          </div>
+        </div>
       )}
-    </main>
+    </div>
   );
 }
 
