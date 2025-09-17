@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { isUserAdmin } from '../services/userService';
+
 export const checkAdmin = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split('Bearer ')[1];
     if (!token) {
