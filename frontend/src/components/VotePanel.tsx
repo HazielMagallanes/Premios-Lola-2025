@@ -25,8 +25,8 @@ function VotePanel() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [hasVoted, setHasVoted] = useState<boolean>(false);
-  const { groupStr } = useParams<{ groupStr: string }>();
-  const group = groupStr ? parseInt(groupStr) : 1; // Default to 1 if no group is specified
+  const { groupId } = useParams<{ groupId: string }>();
+  const group = !isNaN(Number(groupId)) ? Number(groupId) : 1; // Default to 1 if no group is specified
   const server = import.meta.env.VITE_API_URL;
   const voteMasterUID = import.meta.env.VITE_VOTE_MASTER;
 
@@ -110,7 +110,7 @@ function VotePanel() {
       return;
     }
 
-    if (hasVoted) {
+    if (hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE) {
       alert("Ya has votado. No puedes votar más de una vez.");
       return;
     }
@@ -168,15 +168,15 @@ function VotePanel() {
           </div>
           <div className="vote-grid">
             {movies
-              .filter((movie) => movie.group === group)
+              .filter((movie) => movie.group == group)
               .map((movie) => (
                 <div key={movie.ID} className="movie">
                   <div className="content">
                     {movie.name}<br />
                     <span className='school'>{movie.school}</span>
                   </div>
-                  <button onClick={() => handleVote(movie.ID)} disabled={hasVoted}>
-                    {hasVoted ? "Ya votaste" : "Votar"}
+                  <button onClick={() => handleVote(movie.ID)} disabled={hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE}>
+                    {hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE ? "Ya votaste" : "Votar"}
                   </button>
                 </div>
               ))}

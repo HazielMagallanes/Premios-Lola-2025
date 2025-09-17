@@ -14,17 +14,19 @@ export interface VoteErrorResponse {
 
 // Types for /proposals GET response
 export interface Proposal {
-  id: number;
+  ID: number;
+  school: string;
   name: string;
   logo: string;
-  group: string;
   votes: number;
+  group: number;
 }
 
 export type GetAllProposalsResponse = Proposal[];
 
 // Types for /proposals POST request and response
 export interface CreateProposalRequest {
+  school: string;
   name: string;
   logo: string;
   group: string;

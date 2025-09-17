@@ -1,20 +1,22 @@
+import 'reflect-metadata';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
+import { config } from 'dotenv';
+import "dotenv/config";
 import { initializeDatabase } from './src/config/database';
+import adminRoutes from './src/routes/adminRoutes';
 import voteRoutes from './src/routes/voteRoutes';
 import userRoutes from './src/routes/userRoutes';
 import stateRoutes from './src/routes/stateRoutes';
 
-// Load environment variables
-dotenv.config();
-
 // Initialize database and tables
 initializeDatabase();
 
+config({ path: "./.env", override: true });
+
 const app = express();
-const port = process.env.PORT || 3304;
+const port = process.env.PORT || 8000;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -22,6 +24,8 @@ app.use(cookieParser());
 // CORS setup
 const allowedOrigins = [
   'http://localhost:5173',
+  "http://localhost:8000",
+  "http://localhost:4173",
   'https://lolacine-3d94c.web.app/',
   'https://lolacine.ghostix.com.ar',
   'https://lolacine-3d94c.web.app',
@@ -42,6 +46,7 @@ app.use(
 );
 
 // Register routes
+app.use('/', adminRoutes);
 app.use('/', stateRoutes);
 app.use('/', userRoutes);
 app.use('/', voteRoutes);

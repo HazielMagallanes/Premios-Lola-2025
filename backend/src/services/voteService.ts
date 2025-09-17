@@ -1,13 +1,15 @@
 // Service for vote-related database operations
 import db from '../config/database';
 import { Vote } from '../models/vote';
+import { ResultSetHeader } from 'mysql2';
 
 export const getVoteById = (id: number): Promise<Vote | null> => {
   return new Promise((resolve, reject) => {
     db.query('SELECT * FROM votos WHERE ID = ?', [id], (error, results) => {
       if (error) return reject(error);
-      if (results.length > 0) {
-        resolve(results[0] as Vote);
+      const votes = results as Vote[];
+      if (votes.length > 0) {
+        resolve(votes[0]);
       } else {
         resolve(null);
       }
@@ -32,12 +34,12 @@ export const getAllProposals = (): Promise<Vote[]> => {
     });
   });
 };
-
-export const createProposal = (name: string, logo: string, group: number): Promise<number> => {
+export const createProposal = (school: string, name: string, logo: string, group: number): Promise<number> => {
   return new Promise((resolve, reject) => {
-    db.query('INSERT INTO votos (name, logo, `group`) VALUES (?, ?, ?)', [name, logo, group], (error, result) => {
+    db.query('INSERT INTO votos (school, name, logo, `group`) VALUES (?, ?, ?, ?)', [school, name, logo, group], (error, result: ResultSetHeader) => {
       if (error) return reject(error);
       resolve(result.insertId);
     });
   });
 };
+
