@@ -25,12 +25,7 @@ app.use(cookieParser());
 // CORS setup
 const allowedOrigins = [
   'http://localhost:5173',
-  "http://localhost:8000",
-  "http://localhost:4173",
-  'https://lolacine-3d94c.web.app/',
-  'https://lolacine.ghostix.com.ar',
-  'https://lolacine-3d94c.web.app',
-  'https://lolacine-3d94c.web.app/admin',
+  'https://premios-lola.web.app',
 ];
 app.use(
   cors({
