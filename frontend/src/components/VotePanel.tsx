@@ -178,8 +178,8 @@ function VotePanel() {
                     {movie.name}<br />
                     <span className='school'>{movie.school}</span>
                   </div>
-                  <button onClick={() => handleVote(movie.ID)} disabled={hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE}>
-                    {hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE ? "Ya votaste" : "Votar"}
+                  <button onClick={() => handleVote(movie.ID)} disabled={hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE && group != 3}>
+                    {hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE && group != 3 ? "Ya votaste" : "Votar"}
                   </button>
                 </div>
               ))}

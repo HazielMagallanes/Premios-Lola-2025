@@ -55,7 +55,7 @@ router.post<
     if (!state || !state.enabled) return res.status(403).json({ error: 'La votación esta deshabilitada para ese grupo, solo puedes votar durante el evento.' });
     const user = await getUserByUID(userId);
     console.log(Number(process.env.GROUP_ALLOW_REVOTE));
-    if (user && user.UID !== process.env.VOTE_MASTER && vote.group != Number(process.env.GROUP_ALLOW_REVOTE)) {
+    if (user && user.UID !== process.env.VOTE_MASTER && vote.group != Number(process.env.GROUP_ALLOW_REVOTE) && vote.group != 3) {
       return res.status(403).json({ error: 'ERROR: User tried to vote but has already voted. Is this correct?' });
     }
     await incrementVote(id);
