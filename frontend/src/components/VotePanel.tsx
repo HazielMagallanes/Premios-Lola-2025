@@ -110,7 +110,7 @@ function VotePanel() {
       return;
     }
 
-    if (hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE) {
+    if (hasVoted && group != import.meta.env.VITE_GROUP_ALLOW_REVOTE && group != 3) {
       alert("Ya has votado. No puedes votar más de una vez.");
       return;
     }
