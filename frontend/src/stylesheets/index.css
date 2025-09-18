@@ -11,7 +11,7 @@ html{
     width: 100vw;
     height: 100vh;
     scroll-behavior: smooth;
-    background-color: #eae287
+    background-color: #ffc567ff
 } 
 body{
     margin: 0px;
@@ -57,14 +57,14 @@ body{
 .movie .content{
     width: 30vw;
     height: 20vh;
-    color: rgb(26,64,0);
-    border: solid 10px rgb(93,157,41);
+    color: #fc001cff;
+    border: solid 10px #de6429ff;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-content: center;
     align-items: center;
-    justify-items: center;
+    justify-content: center;
     font-family: "Roboto";
     font-size: 3vh;
     font-weight: 800;
@@ -82,16 +82,17 @@ body{
 .movie.kids .content > img{
     width: 60%;
     height: 80%;
+    aspect-ratio: 1 / 1;
 }
 .movie .content .school{
-    color: rgb(93,157,41);
+    color: rgba(253, 13, 41, 0.853);
     font-size: calc(3vh - 0.5vh);
     font-weight: 300;
 }
 button{
-    background: rgba(93,157,41, 0.336);
+    background: #de6f29ff;
     border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(93,157,41, 0.1);
+    box-shadow: 0 4px 30px rgba(222, 110, 41, 0.1);
     backdrop-filter: blur(9.5px);
     -webkit-backdrop-filter: blur(9.5px);
     border: 1px solid rgba(0, 0, 0, 0.12);
